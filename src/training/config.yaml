@@ -1,0 +1,9 @@
+base_model: "yolo11n.pt"
+dataset_yaml: "../../dataset/data.yaml"
+epochs: 4
+batch_size: 16
+imagesz: 640
+project: "../../runs"
+run_name: "yolov11_experiment_01"
+device: cpu
+workers: 4

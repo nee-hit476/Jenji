@@ -1,0 +1,13 @@
+train: images/train
+val: images/val
+test: images/test
+
+nc: 7
+names:
+  0: OxygenTank
+  1: NitrogenTank
+  2: FirstAidBox
+  3: FireAlarm
+  4: SafetySwitchPanel
+  5: EmergencyPhone
+  6: FireExtinguisher
