@@ -4,17 +4,21 @@ const Hero = () => {
     return (
         <div className="relative w-full min-h-screen overflow-hidden">
             {/* Main content area with flex */}
-            <div className="flex flex-col pt-20 justify-start min-h-screen relative z-10">
-                <TrueFocus
-                    sentence="JenJI AI"
-                    manualMode={false}
-                    blurAmount={5}
-                    borderColor="red"
-                    animationDuration={2}
-                    pauseBetweenAnimations={1}
-                />
-                {/* Add more content here - it will be centered and above the icons */}
+            <div className="flex flex-col w-full md:flex-row items-center gap-3 text-white font-sans pt-10 justify-start px-60">
+                {/* Left: Focused logo word */}
+                <div className="text-6xl font-extrabold leading-tight flex flex-wrap items-center justify-center md:justify-start w-150 h-5">
+                    <TrueFocus
+                        sentence="Jenji AI"
+                        manualMode={false}
+                        blurAmount={5}
+                        borderColor="red"
+                        animationDuration={2}
+                        pauseBetweenAnimations={1}
+                    />
+                    <span className="ml-3">enables Real-Time Object Detection for Space Stations</span>
+                </div>
             </div>
+
 
             {/* Decorative icons layer - behind main content */}
             <div className="absolute inset-0 pointer-events-none">
@@ -30,7 +34,7 @@ const Hero = () => {
                 <img
                     src="/aid.png"
                     alt=""
-                    className="absolute bottom-60 md:bottom-80 left-4 md:left-20 h-28 md:h-42 transform -rotate-12 animate-bounce opacity-70"
+                    className="absolute bottom-60 md:bottom-80 left-4 md:left-15 h-28 md:h-42 transform -rotate-12 animate-bounce opacity-70"
                     style={{ animationDuration: "5s" }}
                 />
 

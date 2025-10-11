@@ -9,7 +9,7 @@ const Nav = () => {
   const navigations = [
     {name: "Dectection", link: "/jenji/predict/upload"},
     {name: "Live", link: "/jenji/live"},
-    {name: "Documentation", link: "/jenji/predict/upload"},
+    {name: "Documentation", link: "/jenji/docs"},
     {name: "Scores", link: "/jenji/predict/upload"},
 
   ]
