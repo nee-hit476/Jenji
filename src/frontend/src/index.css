@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+.load-menu {
+  animation: load-nav 0.1s ease-in forwards;
+}
+
+@keyframes load-nav {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
