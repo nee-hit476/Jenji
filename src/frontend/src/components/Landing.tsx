@@ -1,8 +1,9 @@
 import { useState } from "react";
 import TwitterIcon from "./icons/TwitterIcon";
 import { Menu } from "lucide-react";
+import Hero from "./Hero";
 
-const Landing = () => {
+const Nav = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   const navigations = [
@@ -83,7 +84,7 @@ const Landing = () => {
               <path d="M21 21l-6 -6"></path>
             </svg>
             <span className="transition-colors text-gray-50/50 hover:text-white rex text-xs  duration-150 sm:text-sm font-medium pl-2 pr-4">
-              Search <span className="hidden xl:inline-block">Components</span>
+              Search <span className="hidden xl:inline-block">map@scores</span>
             </span>
             <kbd className="pointer-events-none text-gray-50/50 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
               <span className="text-xs">⌘</span>K
@@ -135,8 +136,10 @@ const Landing = () => {
           </div>
         )}
       </div>
+
+      <Hero />
     </div>
   );
 };
 
-export default Landing;
+export default Nav;
