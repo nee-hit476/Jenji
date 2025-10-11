@@ -1,35 +1,10 @@
 import { Link } from 'react-router-dom';
-import { Rocket, Github, ArrowLeft, Terminal, Database, Cpu, Play } from 'lucide-react';
+import { ArrowLeft, Terminal, Database, Cpu, Play } from 'lucide-react';
 
 export default function Documentation() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Rocket className="w-8 h-8 text-cyan-400" />
-              <span className="text-2xl font-bold text-white">Jenji</span>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link to="/" className="text-gray-300 hover:text-white transition">Home</Link>
-              <Link to="/about" className="text-gray-300 hover:text-white transition">About</Link>
-              <Link to="/detection" className="text-gray-300 hover:text-white transition">Live Detection</Link>
-              <Link to="/docs" className="text-white font-semibold">Documentation</Link>
-              <a
-                href="https://github.com/nee-hit476/Jenji"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen bg-gradient-to-br bg-black">
+    
       <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <Link to="/" className="inline-flex items-center space-x-2 text-cyan-400 hover:text-cyan-300 mb-8 transition">
@@ -43,7 +18,7 @@ export default function Documentation() {
           </p>
 
           {/* Setup Instructions */}
-          <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-8 mb-8">
+          <div className="bg-black backdrop-blur border border-slate-700 rounded-xl p-8 mb-8">
             <h2 className="text-3xl font-bold text-white mb-6 flex items-center space-x-3">
               <Terminal className="w-8 h-8 text-cyan-400" />
               <span>Setup Instructions</span>
@@ -52,7 +27,7 @@ export default function Documentation() {
             <div className="space-y-8">
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">1. Clone Repository</h3>
-                <div className="bg-slate-900 rounded-lg p-4 border border-slate-600">
+                <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600">
                   <code className="text-cyan-400 text-sm">
                     git clone https://github.com/nee-hit476/Jenji.git<br />
                     cd Jenji
@@ -63,7 +38,7 @@ export default function Documentation() {
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">2. Set up Python Environment</h3>
                 <p className="text-gray-300 mb-3">Using conda:</p>
-                <div className="bg-slate-900 rounded-lg p-4 border border-slate-600">
+                <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600">
                   <code className="text-cyan-400 text-sm">
                     conda env create -f environment.yml<br />
                     conda activate jenji
@@ -82,7 +57,7 @@ export default function Documentation() {
                   <li>YOLO-compatible .txt labels</li>
                   <li>data.yaml describing class names and dataset paths</li>
                 </ul>
-                <div className="bg-slate-900 rounded-lg p-4 border border-slate-600">
+                <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600">
                   <code className="text-cyan-400 text-sm">
                     run download_dataset.ps1
                   </code>
@@ -92,7 +67,7 @@ export default function Documentation() {
           </div>
 
           {/* Training */}
-          <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-8 mb-8">
+          <div className="bg-black backdrop-blur border border-slate-700 rounded-xl p-8 mb-8">
             <h2 className="text-3xl font-bold text-white mb-6 flex items-center space-x-3">
               <Cpu className="w-8 h-8 text-cyan-400" />
               <span>Model Training</span>
@@ -101,7 +76,7 @@ export default function Documentation() {
             <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Train YOLO Model</h3>
-                <div className="bg-slate-900 rounded-lg p-4 border border-slate-600 mb-3">
+                <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600 mb-3">
                   <code className="text-cyan-400 text-sm">
                     python train.py --cfg config.yaml --data ../dataset/data.yaml --epochs 50 --batch-size 16
                   </code>
@@ -115,7 +90,7 @@ export default function Documentation() {
 
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Evaluate Model Performance</h3>
-                <div className="bg-slate-900 rounded-lg p-4 border border-slate-600 mb-3">
+                <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600 mb-3">
                   <code className="text-cyan-400 text-sm">
                     python eval.py --weights ../runs/yolov11_experiment_x/weights/best.pt --data ../dataset/data.yaml
                   </code>
@@ -131,7 +106,7 @@ export default function Documentation() {
           </div>
 
           {/* Running the App */}
-          <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-8 mb-8">
+          <div className="bg-black backdrop-blur border border-slate-700 rounded-xl p-8 mb-8">
             <h2 className="text-3xl font-bold text-white mb-6 flex items-center space-x-3">
               <Play className="w-8 h-8 text-cyan-400" />
               <span>Running the Application</span>
@@ -140,7 +115,7 @@ export default function Documentation() {
             <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Start Flask-SocketIO Backend</h3>
-                <div className="bg-slate-900 rounded-lg p-4 border border-slate-600 mb-3">
+                <div className="bg-gray-900/60 rounded-lg p-4 border border-slate-600 mb-3">
                   <code className="text-cyan-400 text-sm">
                     cd src<br />
                     python launcher/launch_app.py
@@ -156,7 +131,7 @@ export default function Documentation() {
 
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Frontend Setup (React)</h3>
-                <div className="bg-slate-900 rounded-lg p-4 border border-slate-600 mb-3">
+                <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600 mb-3">
                   <code className="text-cyan-400 text-sm">
                     cd src/frontend<br />
                     npm install<br />
@@ -181,12 +156,12 @@ export default function Documentation() {
           </div>
 
           {/* Project Structure */}
-          <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-8 mb-8">
+          <div className="bg-black backdrop-blur border border-slate-700 rounded-xl p-8 mb-8">
             <h2 className="text-3xl font-bold text-white mb-6 flex items-center space-x-3">
               <Database className="w-8 h-8 text-cyan-400" />
               <span>Project Structure</span>
             </h2>
-            <div className="bg-slate-900 rounded-lg p-4 border border-slate-600">
+            <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600">
               <pre className="text-cyan-400 text-sm overflow-x-auto">
 {`Jenji/
 ├─ dataset/

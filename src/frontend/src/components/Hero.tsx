@@ -1,8 +1,12 @@
+import { ShootingStars } from "./[ui]/shooting-stars";
+import { StarsBackground } from "./[ui]/stars-background";
 import TrueFocus from "./[ui]/TrueFocus";
 
 const Hero = () => {
     return (
         <div className="relative w-full min-h-screen overflow-hidden">
+            <StarsBackground />
+            <ShootingStars />
             {/* Main content area with flex */}
             <div className="flex flex-col w-full md:flex-row items-center gap-3 text-white font-sans pt-10 justify-start px-60">
                 {/* Left: Focused logo word */}
@@ -26,7 +30,7 @@ const Hero = () => {
                 <img
                     src="/oxygen3.png"
                     alt=""
-                    className="absolute bottom-50 md:bottom-30 right-4 md:right-10 h-24 md:h-40 transform rotate-45 animate-bounce opacity-70"
+                    className="absolute bottom-50 md:bottom-30 right-4 md:right-10 h-24 md:h-40 transform rotate-25 animate-bounce opacity-70"
                     style={{ animationDuration: '5s' }}
                 />
 
@@ -65,7 +69,7 @@ const Hero = () => {
                 <img
                     src="/emergency phone.png"
                     alt=""
-                    className="absolute top-1/3 right-2 md:right-10 h-20 md:h-30 transform -rotate-40 animate-bounce opacity-70"
+                    className="absolute bottom-80 right-2 md:right-10 h-20 md:h-40 transform -rotate-40 animate-bounce opacity-70"
                     style={{ animationDuration: '5s' }}
                 />
             </div>

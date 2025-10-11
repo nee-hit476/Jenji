@@ -38,7 +38,7 @@ const Nav = () => {
           </div>
 
           {/* Navigator */}
-          <div className="navigator hidden md:flex flex-row gap-3 items-center text-sm ml-30">
+          <div className="navigator hidden md:flex flex-row gap-8 items-center text-sm ml-30">
             {navigations.map(
               (navigation, index) => (
                 <a href={navigation.link}>
