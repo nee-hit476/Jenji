@@ -2,6 +2,7 @@ import { useState } from "react";
 import TwitterIcon from "./icons/TwitterIcon";
 import { Menu } from "lucide-react";
 import Hero from "./Hero";
+import { WobbleCardDemo } from "./Wobble";
 
 const Nav = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
@@ -138,6 +139,7 @@ const Nav = () => {
       </div>
 
       <Hero />
+      <WobbleCardDemo/>
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { ArrowLeft, Terminal, Database, Cpu, Play } from 'lucide-react';
 export default function Documentation() {
   return (
     <div className="min-h-screen bg-gradient-to-br bg-black">
+      
     
       <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
