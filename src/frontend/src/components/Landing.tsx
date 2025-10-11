@@ -22,7 +22,7 @@ const Landing = () => {
           Object Detection
         </span>
       </div>
-      <div className="navbar flex items-center justify-between w-full flex-wrap">
+      <div className="navbar flex items-center justify-between md:justify-around w-full flex-wrap">
         {/* Left: Logo + Title */}
         <div className="flex flex-row gap-10  p-4 relative overflow-hidden md:px-10">
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -64,8 +64,9 @@ const Landing = () => {
           
         </div>
 
-            <div className="absolute hidden md:block right-2">
-              <button className="flex relative justify-start items-center text-sm text-muted-foreground border-white/[0.2] py-2 w-fit border shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] px-4 rounded-xl bg-brand">
+            {/* Right: Search, Github, Twitter */}
+        <div className="hidden md:flex items-center gap-4 mr-4">
+          <button className="flex relative justify-start items-center text-sm text-muted-foreground border-white/[0.2] py-2 w-fit border shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] px-4 rounded-xl bg-brand">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -88,7 +89,17 @@ const Landing = () => {
               <span className="text-xs">⌘</span>K
             </kbd>
           </button>
-            </div>
+          
+          <a href="https://github.com/nee-hit476/Jenji" target="_blank">
+            <span className="text-gray-50/50 font-semibold hover:text-white transition-colors duration-150">
+              AI
+            </span>
+          </a>
+
+          <button>
+            <TwitterIcon />
+          </button>
+        </div>
 
         {/* Right: Twitter */}
         <div className="flex items-center justify-end">
