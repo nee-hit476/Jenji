@@ -22,7 +22,7 @@ class ModelLoader:
             raise FileNotFoundError(f"Model Path not found.. ${model_path}")
         print(f"Loading Model Path from ${model_path} ... ")
         self.model = YOLO(model_path)
-        print(self.model)
+        # print(self.model)
 
     def predict_ndarray(self, img: np.ndarray, imagesz: int = 640, conf: float = 0.25):
         """
