@@ -5,10 +5,17 @@
 **Jenji** is a real-time object detection application built to detect critical safety objects on a space station using **YOLOv11**. It leverages **Python, Flask-SocketIO, OpenCV, and React** to stream and annotate live webcam feeds, with a WebView desktop launcher for easy deployment.
 ---
 
+## 📌 Scores
+![image](/assets/trained_scores.png)
+![image](/assets/dat.png)
+
 ## 📌 Project Structure
 
 ```
 Jenji/
+├─ assets/
+├─ ENV_SETUP # files for setting up conda environment
+├─ runs_test # a examine folder independent of project
 ├─ dataset/
 │ └─ data.yaml # YOLO dataset config
 ├─ src/
@@ -18,6 +25,11 @@ Jenji/
 │ │ └─ config.yaml # YOLO config
 │ ├─ api/
 │ │ ├─ app.py # Optional REST API for image upload
+| | ├─ config.py
+| | ├─ detection_service.py
+| | ├─ detection_visualizer.py
+| | ├─ image_processor.py
+| | ├─ socket_handlers.py
 │ │ ├─ live_app.py # Flask + SocketIO for live detection
 │ │ └─ model_loader.py # YOLO model loader
 │ ├─ utils/
@@ -33,7 +45,7 @@ Jenji/
 ├─ runs/ # Training outputs (weights, logs)
 ├─ environment.yml # Conda environment
 ├─ Dockerfile # Optional: containerize API
-├─ docker-compose.yml # Optional: container orchestration
+├─ docker-compose.yml 
 ├─ README.md
 └─ REPORT_TEMPLATE.md
 ```
