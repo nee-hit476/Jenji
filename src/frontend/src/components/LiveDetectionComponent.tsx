@@ -1,6 +1,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { Video, Activity, Zap, Eye } from "lucide-react";
+import { Video, Activity, Zap, ArrowLeft } from "lucide-react";
+import { StarsBackground } from "./[ui]/stars-background";
+import { ShootingStars } from "./[ui]/shooting-stars";
+import { useNavigate } from "react-router";
 
 const LiveDetectionComponent: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -11,8 +14,12 @@ const LiveDetectionComponent: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [fps, setFps] = useState(0);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const newSocket = io("http://localhost:8080", { transports: ["websocket"] });
+    const newSocket = io("http://localhost:8080", {
+      transports: ["websocket"],
+    });
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
@@ -27,7 +34,9 @@ const LiveDetectionComponent: React.FC = () => {
       setDetections(data.detections);
     });
 
-    return () => {newSocket.disconnect()};
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -47,7 +56,13 @@ const LiveDetectionComponent: React.FC = () => {
       const ctx = canvasRef.current.getContext("2d");
       if (!ctx) return;
 
-      ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+      ctx.drawImage(
+        videoRef.current,
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height
+      );
       const frame = canvasRef.current.toDataURL("image/jpeg", 0.5);
       socket.emit("image", frame);
 
@@ -64,36 +79,55 @@ const LiveDetectionComponent: React.FC = () => {
   }, [socket]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <div className="min-h-screen bg-black text-white">
+      <StarsBackground />
+      <ShootingStars />
       {/* Header */}
-      <div className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+      <div className="bg-black border-slate-700/50">
+        <button
+          className="absolute text-xl text-gray-500 m-5 items-center hover:text-gray-300 transition-colors duration-150 cursor-pointer flex flex-row gap-2"
+          onClick={() => navigate("/")}
+        >
+          <ArrowLeft className="size-5" />
+          <span>back to home</span>
+        </button>
+        <div className="max-w-7xl mx-auto px-6 py-4 bg-black">
+          <div className="flex flex-col gap-4 md:flex-row items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg">
-                <Eye className="w-6 h-6" />
+              <div className="p-2  rounded-lg">
+                <img src="/jenji.png" className="h-7 w-7" alt="" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-white bg-clip-text text-transparent">
                   Live YOLO Detection
                 </h1>
-                <p className="text-sm text-slate-400">Real-time object recognition system</p>
+                <p className="text-sm text-slate-400">
+                  Real-time object recognition system
+                </p>
               </div>
             </div>
 
             {/* Status indicators */}
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-700/50 border border-slate-600/50">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-950/50 border border-slate-600/50">
                 <Activity className="w-4 h-4 text-cyan-400" />
                 <span className="text-sm font-medium">{fps} FPS</span>
               </div>
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
-                isConnected
-                  ? 'bg-emerald-500/10 border-emerald-500/50'
-                  : 'bg-red-500/10 border-red-500/50'
-              }`}>
-                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
-                <span className="text-sm font-medium">{isConnected ? 'Connected' : 'Disconnected'}</span>
+              <div
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
+                  isConnected
+                    ? "bg-emerald-500/10 border-emerald-500/50"
+                    : "bg-red-500/10 border-red-500/50"
+                }`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    isConnected ? "bg-emerald-400 animate-pulse" : "bg-red-400"
+                  }`}
+                />
+                <span className="text-sm font-medium">
+                  {isConnected ? "Connected" : "Disconnected"}
+                </span>
               </div>
             </div>
           </div>
@@ -105,10 +139,10 @@ const LiveDetectionComponent: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Original webcam feed */}
           <div className="group">
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-cyan-500/10 hover:border-cyan-500/30">
-              <div className="px-6 py-4 bg-slate-800/80 backdrop-blur-sm border-b border-slate-700/50 flex items-center justify-between">
+            <div className="bg-gradient-black rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-cyan-500/10 hover:border-cyan-500/30">
+              <div className="px-6 py-4 bg-black backdrop-blur-sm border-b border-slate-700/50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-700/50 rounded-lg">
+                  <div className="p-2 bg-black rounded-lg">
                     <Video className="w-5 h-5 text-cyan-400" />
                   </div>
                   <h2 className="text-lg font-semibold">Webcam Feed</h2>
@@ -116,7 +150,7 @@ const LiveDetectionComponent: React.FC = () => {
                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
               </div>
               <div className="p-4">
-                <div className="rounded-xl overflow-hidden bg-slate-950 shadow-inner border border-slate-700/30">
+                <div className="rounded-xl overflow-hidden bg-gray-950 shadow-inner border border-slate-700/30">
                   <video
                     ref={videoRef}
                     autoPlay
@@ -132,16 +166,18 @@ const LiveDetectionComponent: React.FC = () => {
 
           {/* Annotated YOLO output */}
           <div className="group">
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-blue-500/10 hover:border-blue-500/30">
-              <div className="px-6 py-4 bg-slate-800/80 backdrop-blur-sm border-b border-slate-700/50 flex items-center justify-between">
+            <div className="bg-black rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-blue-500/10 hover:border-blue-500/30">
+              <div className="px-6 py-4 bg-black backdrop-blur-sm border-b border-slate-700/50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-700/50 rounded-lg">
+                  <div className="p-2 bg-gray-950 rounded-lg">
                     <Zap className="w-5 h-5 text-blue-400" />
                   </div>
                   <h2 className="text-lg font-semibold">YOLO Detection</h2>
                 </div>
-                <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30">
-                  <span className="text-xs font-medium text-blue-400">{detections.length} objects</span>
+                <div className="px-3 py-1 rounded-full bg-gray-900/10 border border-blue-500/30">
+                  <span className="text-xs font-medium text-blue-400">
+                    {detections.length} objects
+                  </span>
                 </div>
               </div>
               <div className="p-4 relative">
@@ -155,9 +191,11 @@ const LiveDetectionComponent: React.FC = () => {
                       className="w-full h-auto"
                     />
                   ) : (
-                    <div className="w-full aspect-video flex flex-col items-center justify-center bg-slate-950">
+                    <div className="w-full aspect-video flex flex-col items-center justify-center bg-gray-950">
                       <div className="w-16 h-16 border-4 border-slate-700 border-t-cyan-500 rounded-full animate-spin mb-4" />
-                      <span className="text-slate-500 text-sm font-medium">Waiting for video stream...</span>
+                      <span className="text-slate-500 text-sm font-medium">
+                        Waiting for video stream...
+                      </span>
                     </div>
                   )}
                 </div>
@@ -202,7 +240,12 @@ const LiveDetectionComponent: React.FC = () => {
         </div>
       </div>
 
-      <canvas ref={canvasRef} width={640} height={480} style={{ display: "none" }} />
+      <canvas
+        ref={canvasRef}
+        width={640}
+        height={480}
+        style={{ display: "none" }}
+      />
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
