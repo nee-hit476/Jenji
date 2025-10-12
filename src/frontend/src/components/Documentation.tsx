@@ -1,14 +1,20 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Terminal, Database, Cpu, Play } from 'lucide-react';
+import { ShootingStars } from './[ui]/shooting-stars';
+import { StarsBackground } from './[ui]/stars-background';
 
 export default function Documentation() {
   return (
-    <div className="min-h-screen bg-gradient-to-br bg-black">
+    <div className="min-h-screen bg-gradient-to-br bg-black scroll-smooth">
       
-    
+      <div className="fixed inset-0 w-full h-full z-0">
+        <StarsBackground />
+        <ShootingStars />
+      </div>
       <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <Link to="/" className="inline-flex items-center space-x-2 text-cyan-400 hover:text-cyan-300 mb-8 transition">
+        
+        <div className="relative z-10 pt-1 pb-20 px-4 sm:px-6 lg:px-8 pointer-events-auto">
+          <Link to="/" className="inline-flex z-50 items-center space-x-2 text-gray-500 mb-8 transition">
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Home</span>
           </Link>
@@ -29,7 +35,7 @@ export default function Documentation() {
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">1. Clone Repository</h3>
                 <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600">
-                  <code className="text-cyan-400 text-sm">
+                  <code className="text-gray-500 text-sm">
                     git clone https://github.com/nee-hit476/Jenji.git<br />
                     cd Jenji
                   </code>
@@ -40,7 +46,7 @@ export default function Documentation() {
                 <h3 className="text-xl font-semibold text-white mb-3">2. Set up Python Environment</h3>
                 <p className="text-gray-300 mb-3">Using conda:</p>
                 <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600">
-                  <code className="text-cyan-400 text-sm">
+                  <code className="text-gray-500 text-sm">
                     conda env create -f environment.yml<br />
                     conda activate jenji
                   </code>
@@ -59,7 +65,7 @@ export default function Documentation() {
                   <li>data.yaml describing class names and dataset paths</li>
                 </ul>
                 <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600">
-                  <code className="text-cyan-400 text-sm">
+                  <code className="text-gray-500 text-sm">
                     run download_dataset.ps1
                   </code>
                 </div>
@@ -78,7 +84,7 @@ export default function Documentation() {
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Train YOLO Model</h3>
                 <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600 mb-3">
-                  <code className="text-cyan-400 text-sm">
+                  <code className="text-gray-500 text-sm">
                     python train.py --cfg config.yaml --data ../dataset/data.yaml --epochs 50 --batch-size 16
                   </code>
                 </div>
@@ -92,7 +98,7 @@ export default function Documentation() {
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Evaluate Model Performance</h3>
                 <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600 mb-3">
-                  <code className="text-cyan-400 text-sm">
+                  <code className="text-gray-500 text-sm">
                     python eval.py --weights ../runs/yolov11_experiment_x/weights/best.pt --data ../dataset/data.yaml
                   </code>
                 </div>
@@ -117,7 +123,7 @@ export default function Documentation() {
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Start Flask-SocketIO Backend</h3>
                 <div className="bg-gray-900/60 rounded-lg p-4 border border-slate-600 mb-3">
-                  <code className="text-cyan-400 text-sm">
+                  <code className="text-gray-500 text-sm">
                     cd src<br />
                     python launcher/launch_app.py
                   </code>
@@ -133,7 +139,7 @@ export default function Documentation() {
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Frontend Setup (React)</h3>
                 <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600 mb-3">
-                  <code className="text-cyan-400 text-sm">
+                  <code className="text-gray-500 text-sm">
                     cd src/frontend<br />
                     npm install<br />
                     npm run dev
@@ -163,7 +169,7 @@ export default function Documentation() {
               <span>Project Structure</span>
             </h2>
             <div className="bg-gray-900/30 rounded-lg p-4 border border-slate-600">
-              <pre className="text-cyan-400 text-sm overflow-x-auto">
+              <pre className="text-gray-500 text-sm overflow-x-auto">
 {`Jenji/
 ├─ dataset/
 │  └─ data.yaml
@@ -195,7 +201,7 @@ export default function Documentation() {
           </div>
 
           {/* Additional Resources */}
-          <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl p-8">
+          <div className=" border border-cyan-500/30 rounded-xl p-8">
             <h2 className="text-2xl font-bold text-white mb-4">Additional Resources</h2>
             <div className="space-y-3 text-gray-300">
               <p>For more detailed information, check out:</p>
@@ -205,7 +211,7 @@ export default function Documentation() {
                     href="https://github.com/nee-hit476/Jenji"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-cyan-400 hover:text-cyan-300 transition"
+                    className="text-gray-500 hover:text-cyan-300 transition"
                   >
                     GitHub Repository →
                   </a>
@@ -215,7 +221,7 @@ export default function Documentation() {
                     href="https://github.com/nee-hit476/Jenji/blob/main/README.md"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-cyan-400 hover:text-cyan-300 transition"
+                    className="text-gray-500 hover:text-cyan-300 transition"
                   >
                     Full README →
                   </a>
@@ -225,7 +231,7 @@ export default function Documentation() {
                     href="https://github.com/nee-hit476/Jenji/blob/main/REPORT_TEMPLATE.md"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-cyan-400 hover:text-cyan-300 transition"
+                    className="text-gray-500 hover:text-cyan-300 transition"
                   >
                     Report Template →
                   </a>

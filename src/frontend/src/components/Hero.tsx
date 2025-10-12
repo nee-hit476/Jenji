@@ -7,7 +7,7 @@ import { DottedGlowBackgroundDemo } from "./dotted-glow-card";
 
 const Hero = () => {
   return (
-    <div className="relative w-full min-h-screen overflow-hidden">
+    <div className="relative w-full min-h-screen overflow-hidden scroll-smooth">
       <StarsBackground />
       <ShootingStars />
       {/* Main content area with flex */}
@@ -26,23 +26,25 @@ const Hero = () => {
             enables Real-Time Object Detection for Space Stations
           </span>
           <div className="text-xl font-semibold">
-            
             <div className="text-gray-400 mt-5">
-                <span>Detect 7 critical space station safety objects under varying conditions. With absolute precision values map@5.0</span>
+              <span>
+                Detect 7 critical space station safety objects under varying
+                conditions. With absolute precision values map@5.0
+              </span>
             </div>
-            
-          <Button label="Get Started"/>
+
+            <Button label="Get Started" />
           </div>
         </div>
         <div className="flex flex-col items-center md:flex-row">
           <div className="w-[2px] h-[500px] hidden md:flex mr-15 bg-gradient-to-b from-transparent via-gray-600 to-transparent"></div>
           <div className="hidden md:flex">
-          <DottedGlowBackgroundDemo />
-          <AnimatedPinDemo/></div>
+            <DottedGlowBackgroundDemo />
+            <AnimatedPinDemo />
+          </div>
           <div className="w-[2px] h-[500px] bg-gradient-to-b hidden md:flex from-transparent via-gray-600 to-transparent"></div>
         </div>
       </div>
-      
 
       {/* Decorative icons layer - behind main content */}
       <div className="absolute inset-0 pointer-events-none">
@@ -91,6 +93,20 @@ const Hero = () => {
           alt=""
           className="absolute bottom-80 right-2 md:right-10 h-20 md:h-40 transform -rotate-40 animate-bounce opacity-70"
           style={{ animationDuration: "5s" }}
+        />
+
+        <img
+          src="/satellite.png"
+          alt="Satellite"
+          className="absolute h-50 md:h-120 md:bottom-10 right-10 md:right-250 animate-spin mix-blend-screen"
+          style={{ animationDuration: "50s"}}
+        />
+
+        <img
+          src="/btn.png"
+          alt="Satellite"
+          className="absolute h-40 md:h-60 bottom-20 right-20 md:right-100 animate-bounce mix-blend-screen"
+          style={{ animationDuration: "5s"}}
         />
       </div>
     </div>
