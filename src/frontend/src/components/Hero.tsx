@@ -1,6 +1,5 @@
 import { AnimatedPinDemo } from "./3dPin";
 import Button from "./[ui]/Button";
-import { GlareCard } from "./[ui]/glare-card";
 import { ShootingStars } from "./[ui]/shooting-stars";
 import { StarsBackground } from "./[ui]/stars-background";
 import TrueFocus from "./[ui]/TrueFocus";

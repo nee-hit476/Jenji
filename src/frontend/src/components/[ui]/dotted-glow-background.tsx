@@ -207,7 +207,8 @@ export default function DottedGlowBackground({
 
     const draw = (now: number) => {
       if (stopped) return;
-      // const dt = (now - last) / 1000; // seconds
+      const dt = (now - last) / 1000; // seconds
+      console.log(dt)
       last = now;
       const { width, height } = container.getBoundingClientRect();
 
