@@ -6,9 +6,10 @@ import { ArrowLeft } from "lucide-react";
 
 const ImageDetectionComponent = () => {
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
-  const [loading, setloading] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
+  // const [loading, setloading] = useState<boolean>(false);
+  // const [error, setError] = useState<boolean>(false);
 
+  console.log(setSocketConnected);
 
   const navigate = useNavigate();
 
