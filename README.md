@@ -1,19 +1,44 @@
-# Jenji — Space Station Safety Object Detection
+<div
+  style="display:flex; margin:10px 0px; justify-content:space-around;  align-items:center; flex-direction:column;"
+>
+<div align="center">
+  <img src="assets/jenji.png" alt="Jenji Logo" width="100" height="100"/>
+</div>
+<div align="center" style="font-size:1.8rem; width:400px; margin-left:1px; font-weight:bold;">Jenji — Space Station Safety Object Detection</div>
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Jenji-blue)](https://github.com/nee-hit476/Jenji/tree/master)
+</div>
 
-**Jenji** is a real-time object detection application built to detect critical safety objects on a space station using **YOLOv11**. It leverages **Python, Flask-SocketIO, OpenCV, and React** to stream and annotate live webcam feeds, with a WebView desktop launcher for easy deployment.
+<p align="center">
+  <a href="https://github.com/nee-hit476/Jenji/tree/master">
+    <img src="https://img.shields.io/badge/GitHub-Jenji-blue" alt="GitHub Repo"/>
+  </a>
+</p>
+
 ---
-## 📌 Jenji 
+
+
+<p style="font-size:1.5rem; font-weight:600;"> <span style="font-weight:800;">Jenji</span> is a real-time object detection application built to detect critical safety objects on a space station using <span style="font-weight:800;">YOLOv11</span>. It leverages <span style="font-weight:800;">Python, Flask-SocketIO, OpenCV, and React</span> to stream and annotate live webcam feeds, with a WebView desktop launcher for easy deployment.
+</p>
+
+
+
+<div style="display:flex; gap:4; align-items:center; margin-bottom:5px;"><img src="assets/jenji.png" width="30"></img><span style="margin-left:5px; font-size:1.5rem; font-weight:bold;">Jenji AI Glimpse</span></div>
+
+--- 
+
 ![image](/assets/landing.png)
 ![image](/assets/detection.png)
 
+<div style="display:flex; gap:4; align-items:center; margin-bottom:5px;"><img src="assets/jenji.png" width="30"></img><span style="margin-left:5px; font-size:1.5rem; font-weight:bold;">Jenji AI Scores</span></div>
 
-## 📌 Scores
+--- 
+
 ![image](/assets/trained_scores.png)
 ![image](/assets/dat.png)
 
-## 📌 Project Structure
+<div style="display:flex; gap:4; align-items:center; margin-bottom:5px;"><img src="assets/jenji.png" width="30"></img><span style="margin-left:5px; font-size:1.5rem; font-weight:bold;">Jenji AI Project Structure</span></div>
+
+--- 
 
 ```
 Jenji/
@@ -54,9 +79,6 @@ Jenji/
 └─ REPORT_TEMPLATE.md
 ```
 
-
----
-
 ## 🎯 Hackathon Objective
 
 - Detect 7 critical **space station safety objects** under varying conditions:
@@ -66,6 +88,23 @@ Jenji/
 - (Bonus) Create a desktop or mobile app to use the trained model live.
 
 ---
+
+## ⚙ Start a project
+```
+./download_dataset.ps1
+make train
+make run 
+```
+### frontend 
+```
+make install-client
+make client
+```
+
+### backend
+```
+make backend # after dataset downloaded and model train
+```
 
 ## ⚙ Setup Instructions
 
