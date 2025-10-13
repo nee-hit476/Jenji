@@ -21,8 +21,7 @@
   </a>
 </p>
 
-
-## 🤖 Jenji AI Glimpse
+## <img src="assets/jenji.png" width="30" align="center"/> Jenji AI Glimpse
 
 <p align="center">
   <img src="assets/landing.png" alt="Landing Page"/>
@@ -32,9 +31,8 @@
   <img src="assets/detection.png" alt="Detection View"/>
 </p>
 
----
 
-## 📊 Jenji AI Scores
+## <img src="assets/jenji.png" width="30" align="center"/> Jenji AI Scores
 
 <p align="center">
   <img src="assets/trained_scores.png" alt="Training Scores"/>
@@ -44,9 +42,8 @@
   <img src="assets/dat.png" alt="Data Analysis"/>
 </p>
 
----
 
-## 📁 Jenji AI Project Structure
+## <img src="assets/jenji.png" width="30" align="center"/> Jenji AI Project Structure
 
 ```
 Jenji/
@@ -87,7 +84,6 @@ Jenji/
 └─ REPORT_TEMPLATE.md
 ```
 
----
 
 ## 🎯 Hackathon Objective
 
@@ -105,7 +101,6 @@ Detect 7 critical **space station safety objects** under varying conditions:
 - Evaluate model performance using **mAP@0.5, Precision, Recall, and Confusion Matrices**
 - **(Bonus)** Create a desktop or mobile app to use the trained model live
 
----
 
 ## 🚀 Quick Start
 
@@ -125,8 +120,6 @@ make client
 ```bash
 make backend # after dataset downloaded and model train
 ```
-
----
 
 ## ⚙️ Setup Instructions
 
@@ -208,7 +201,6 @@ npm run dev
     - **Green box** = detected object
     - **Label** = class name + confidence
 
----
 
 ## 🐛 Debugging and Issues Faced
 
@@ -225,7 +217,6 @@ npm run dev
 
 This project was created for a hackathon. Please check the repository for license details.
 
----
 
 ## 🤝 Contributing
 
