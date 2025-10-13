@@ -47,41 +47,48 @@
 
 ```
 Jenji/
-├─ assets/
-├─ ENV_SETUP # files for setting up conda environment
-├─ runs_test # a examine folder independent of project
-├─ dataset/
-│ └─ data.yaml # YOLO dataset config
-├─ src/
-│ ├─ training/
-│ │ ├─ train.py # Training script
-│ │ ├─ eval.py # Evaluation script
-│ │ └─ config.yaml # YOLO config
-│ ├─ api/
-│ │ ├─ app.py # Optional REST API for image upload
-│ │ ├─ config.py
-│ │ ├─ detection_service.py
-│ │ ├─ detection_visualizer.py
-│ │ ├─ image_processor.py
-│ │ ├─ socket_handlers.py
-│ │ ├─ live_app.py # Flask + SocketIO for live detection
-│ │ └─ model_loader.py # YOLO model loader
-│ ├─ utils/
-│ │ ├─ metrics.py
-│ │ └─ viz.py
-│ ├─ frontend/
-│ │ ├─ package.json
-│ │ └─ src/
-│ │ ├─ App.tsx
-│ │ └─ index.tsx
-│ └─ launcher/
-│ └─ launch_app.py # WebView-based desktop launcher
-├─ runs/ # Training outputs (weights, logs)
-├─ environment.yml # Conda environment
-├─ Dockerfile # Optional: containerize API
-├─ docker-compose.yml 
-├─ README.md
-└─ REPORT_TEMPLATE.md
+├─ .vscode/                    # VS Code configuration
+├─ assets/                     # Project assets (images, logos)
+├─ dataset/                    # YOLO dataset
+│  └─ data.yaml               # YOLO dataset config
+├─ ENV_SETUP/                  # Files for setting up conda environment
+├─ runs/                       # Training outputs (weights, logs)
+├─ runs_test/                  # Examine folder independent of project
+├─ src/                        # Source code
+│  ├─ training/
+│  │  ├─ train.py             # Training script
+│  │  ├─ eval.py              # Evaluation script
+│  │  └─ config.yaml          # YOLO config
+│  ├─ api/
+│  │  ├─ app.py               # Optional REST API for image upload
+│  │  ├─ config.py            # Configuration settings
+│  │  ├─ detection_service.py # Detection service logic
+│  │  ├─ detection_visualizer.py # Visualization utilities
+│  │  ├─ image_processor.py   # Image processing utilities
+│  │  ├─ socket_handlers.py   # WebSocket handlers
+│  │  ├─ live_app.py          # Flask + SocketIO for live detection
+│  │  └─ model_loader.py      # YOLO model loader
+│  ├─ utils/
+│  │  ├─ metrics.py           # Evaluation metrics
+│  │  └─ viz.py               # Visualization utilities
+│  ├─ frontend/                # React frontend
+│  │  ├─ package.json
+│  │  └─ src/
+│  │     ├─ App.tsx
+│  │     └─ index.tsx
+│  └─ launcher/
+│     └─ launch_app.py        # WebView-based desktop launcher
+├─ .dockerignore               # Docker ignore file
+├─ .gitignore                  # Git ignore file
+├─ compose.yaml                # Docker Compose configuration
+├─ Dockerfile                  # Docker container configuration
+├─ download_dataset.ps1        # PowerShell script to download dataset
+├─ environment.yaml            # Conda environment specification
+├─ Makefile                    # Build automation
+├─ plot.py                     # Plotting utilities
+├─ README.Docker.md            # Docker-specific documentation
+├─ README.md                   # Main documentation
+└─ yolo11n.pt                  # Pre-trained YOLO11 model weights
 ```
 
 
