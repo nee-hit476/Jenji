@@ -1,0 +1,33 @@
+# Bytecode, envs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+
+# Conda & caches
+envs/
+.conda/
+*.conda
+
+# data
+dataset/images/*
+dataset/labels/*
+# keep small placeholder files in dataset but DO NOT commit large images
+dataset/*.zip
+
+# runs and model weights (optionally include best weights, otherwise keep out)
+runs/
+*.pt
+*.pth
+
+# node
+node_modules/
+build/
+dist/
+
+# editor
+.vscode/
+.DS_Store
+Thumbs.db
