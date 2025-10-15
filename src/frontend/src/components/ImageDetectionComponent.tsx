@@ -14,7 +14,7 @@ const ImageDetectionComponent = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-screen bg-black font-sans p-5">
+    <div className="h-screen w-screen bg-black font-sans p-5 overflow-hidden">
       <StarsBackground />
       <ShootingStars />
       <button
@@ -45,6 +45,13 @@ const ImageDetectionComponent = () => {
         </div>
         
       </div>
+
+      <div className=" h-full max-w-full flex justify-center"> 
+                  <div className="w-fit bg-gray-500/20">
+
+                  </div>
+      </div>
+
     </div>
   );
 };
