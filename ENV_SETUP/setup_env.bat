@@ -9,7 +9,7 @@ echo ======================================
 
 where conda >nul 2>nul
 if %errorlevel% neq 0 (
-    echo ❌ Conda not found! Please install Anaconda or Miniconda first.
+    echo Conda not found! Please install Anaconda or Miniconda first.
     pause
     exit /b
 )
@@ -19,7 +19,7 @@ echo [2/5] Creating Conda environment
 echo ================================
 
 IF EXIST "%USERPROFILE%\anaconda3\envs\EDU" (
-    echo ⚠️ Environment 'EDU' already exists. Skipping creation.
+    echo Environment 'EDU' already exists. Skipping creation.
 ) ELSE (
     conda env create -f environment.yml
 )
@@ -36,7 +36,7 @@ pip install --upgrade pip
 pip install ultralytics flask opencv-python-headless tensorboard wandb seaborn requests
 
 echo =======================================
-echo [5/5] Environment setup completed ✅
+echo [5/5] Environment setup completed
 echo =======================================
 echo.
 echo Run the following command before training:
