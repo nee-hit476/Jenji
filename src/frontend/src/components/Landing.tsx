@@ -11,8 +11,16 @@ const Nav = () => {
     {name: "Dectection", link: "/jenji/predict/upload"},
     {name: "Live", link: "/jenji/live"},
     {name: "Documentation", link: "/jenji/docs"},
-    {name: "Scores", link: "/jenji/predict/upload"},
+    {name: "Scores", link: "/jenji/scores"},
 
+  ]
+
+  const navigations_mobile = [
+    {name: "Dectection", link: "/jenji/predict/upload"},
+    {name: "Live", link: "/jenji/live"},
+    {name: "Documentation", link: "/jenji/docs"},
+    {name: "Scores", link: "/jenji/scores"},
+    {name: "Github", link: "https://www.github.com/nee-hit476/jenji"}
   ]
 
   return (
@@ -124,18 +132,22 @@ const Nav = () => {
             >
               ✕
             </button>
-            {["Detection", "Live", "Documentation", "Scores", "Github"].map(
-              (item) => (
+            {navigations_mobile.map(
+              (item, index) => (
                 <span
-                  key={item}
+                  key={index}
                   className="text-xl text-gray-50/70 hover:text-white transition-colors duration-150"
                 >
-                  {item}
+                  <a href={item.link}>
+                  {item.name}
+                  </a>
                 </span>
               )
             )}
+            
           </div>
         )}
+        
       </div>
 
       <Hero />
