@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 from typing import Dict, List
 from model_loader import ModelLoader
 from detection_visuallizer import DetectionVisualizer
@@ -65,6 +66,45 @@ class DetectionService:
         except ValueError as e:
             # Re-raise ValueError with context
             raise Exception(f"Frame processing failed: {str(e)}")
+
+    def process_frame_bytes(self, image_bytes: bytes) -> Dict:
+        """
+        Process a raw image bytes payload (JPEG/PNG bytes): decode, detect, annotate, encode.
+
+        @param {bytes} image_bytes - raw image bytes (as sent from browser Blob)
+        @return {Dict} - Processed result with frame and detections
+        """
+        try:
+            # decode bytes into cv2 image
+            npimg = np.frombuffer(image_bytes, dtype=np.uint8)
+            frame = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+
+            if frame is None or frame.size == 0:
+                raise ValueError("Decoded frame is empty")
+
+            print(f"Frame decoded successfully: shape={frame.shape}, dtype={frame.dtype}")
+
+            # Run detection
+            result = self.model.predict_ndarray(frame)
+            detections = result.get("detections", [])
+
+            print(f"Detections found: {len(detections)}")
+
+            # Annotate frame
+            annotated_frame = self.visualizer.draw_detections(frame, detections)
+
+            if annotated_frame is None or annotated_frame.size == 0:
+                raise ValueError("Annotated frame is empty")
+
+            encoded_frame = self.image_processor.encode_image_to_base64(annotated_frame)
+
+            print(f"Frame encoded successfully")
+
+            return {
+                "frame": encoded_frame,
+                "detections": detections,
+                "count": len(detections)
+            }
+
         except Exception as e:
-            # Catch all other exceptions
             raise Exception(f"Frame processing failed: {str(e)}")

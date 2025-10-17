@@ -176,7 +176,7 @@ const LiveDetectionComponent = () => {
     restart();
   }, [selectedDeviceId]);
 
-  // Send frames to server
+  // Send frames to server (binary blob preferred)
   useEffect(() => {
     if (!socket || !isConnected) return;
 
@@ -196,6 +196,7 @@ const LiveDetectionComponent = () => {
           // Simple backpressure: don't send a new frame if server hasn't responded
           if (awaitingResponse) return;
 
+          // Draw a smaller capture (canvas size set to 320x240)
           ctx.drawImage(
             videoRef.current,
             0,
@@ -204,10 +205,25 @@ const LiveDetectionComponent = () => {
             canvasRef.current.height
           );
 
-          // Reduce size / quality to lower bandwidth and inference time
-          const frame = canvasRef.current.toDataURL("image/jpeg", 0.35);
-          socket.emit("image", frame);
-          setAwaitingResponse(true);
+          // Use toBlob to send binary (smaller than base64). Quality 0.5.
+          canvasRef.current.toBlob(
+            (blob) => {
+              if (!blob) return;
+              try {
+                // emit binary blob; server listens to 'image_binary'
+                socket.emit("image_binary", blob);
+                setAwaitingResponse(true);
+              } catch (err) {
+                console.warn("Binary emit failed, falling back to base64", err);
+                // fallback: send base64 (keep compatibility)
+                const frame = canvasRef.current!.toDataURL("image/jpeg", 0.35);
+                socket.emit("image", frame);
+                setAwaitingResponse(true);
+              }
+            },
+            "image/jpeg",
+            0.5
+          );
 
           frameCount++;
           const now = Date.now();
@@ -476,8 +492,8 @@ const LiveDetectionComponent = () => {
 
       <canvas
         ref={canvasRef}
-        width={640}
-        height={480}
+        width={320}
+        height={240}
         style={{ display: "none" }}
       />
 

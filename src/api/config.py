@@ -23,7 +23,7 @@ class Config:
     # In containerized deployments we expect the model to be mounted at /app/model/best.pt
     MODEL_PATH: str = os.getenv(
         "MODEL_PATH",
-        r"Path to your model"
+        r"C:\Users\itz_n\OneDrive\Desktop\Microsoft-Hackathon\Jenji\runs\yolov11_experiment_01\weights\best.pt"
     )
 
     # Detection Settings

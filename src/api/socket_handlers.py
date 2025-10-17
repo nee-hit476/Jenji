@@ -56,6 +56,30 @@ class SocketIOHandlers:
             # Log and emit error only to the sender
             logger.error(f"Error processing frame: {str(e)}")
             emit("response_back", {"error": str(e)})
+
+    def handle_image_binary(self, data: bytes) -> None:
+        """
+        Handle incoming binary image frames (sent as Blob/ArrayBuffer from browser).
+        """
+        try:
+            if not self.service_ready.is_set():
+                emit("response_back", {"error": "Model is still loading, please wait...", "loading": True})
+                return
+
+            detection_service = self.get_detection_service()
+            if detection_service is None:
+                emit("response_back", {"error": "Detection service not available", "loading": True})
+                return
+
+            # Process raw bytes
+            result = detection_service.process_frame_bytes(data)
+
+            emit("response_back", result)
+            logger.info(f"Processed binary frame with {result['count']} detections")
+
+        except Exception as e:
+            logger.error(f"Error processing binary frame: {str(e)}")
+            emit("response_back", {"error": str(e)})
     
     def handle_connect(self) -> None:
         """Handle client connection."""

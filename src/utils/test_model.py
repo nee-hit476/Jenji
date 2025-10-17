@@ -1,9 +1,9 @@
 import json
 from ultralytics import YOLO
 
-model = YOLO(r"path to your model .pt")
+model = YOLO(r"C:\Users\itz_n\OneDrive\Desktop\Microsoft-Hackathon\Jenji\runs\yolov11_experiment_01\weights\best.pt")
 
-results = model(r"image path")
+results = model(r"C:\Users\itz_n\OneDrive\Desktop\Microsoft-Hackathon\Jenji\dataset\images\train\images\000001882_dark_clutter.png")
 
 # print(str(results))
 

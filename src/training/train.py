@@ -55,7 +55,7 @@ def main() -> None:
     # -------------------------------
     # Dataset Configuration
     # -------------------------------
-    dataset_yaml: str = cfg.get("dataset", r"path to your data yml config file")
+    dataset_yaml: str = cfg.get("dataset", r"C:\Users\itz_n\OneDrive\Desktop\Microsoft-Hackathon\Jenji\dataset\data.yaml")
     print(f"[INFO] Using dataset YAML: {dataset_yaml}")
 
     if not os.path.exists(dataset_yaml):

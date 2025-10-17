@@ -86,6 +86,7 @@ def create_app(config: Config) -> tuple[Flask, SocketIO]:
     
     # Register SocketIO event handlers
     socketio.on_event("image", handlers.handle_image)
+    socketio.on_event("image_binary", handlers.handle_image_binary)
     socketio.on_event("connect", handlers.handle_connect)
     socketio.on_event("disconnect", handlers.handle_disconnect)
     
