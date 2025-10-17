@@ -14,6 +14,8 @@ interface Detection {
 const LiveDetectionComponent = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // offscreen small capture to reduce bandwidth/latency
+  const smallCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [frameSrc, setFrameSrc] = useState<string | null>(null);
@@ -183,6 +185,13 @@ const LiveDetectionComponent = () => {
     let frameCount = 0;
     let lastTime = Date.now();
 
+    // create an offscreen small canvas once
+    if (!smallCanvasRef.current) {
+      smallCanvasRef.current = document.createElement("canvas");
+      smallCanvasRef.current.width = 320;
+      smallCanvasRef.current.height = 240;
+    }
+
     const interval = setInterval(() => {
       if (!videoRef.current || !canvasRef.current || !streamRef.current) return;
       
@@ -196,34 +205,59 @@ const LiveDetectionComponent = () => {
           // Simple backpressure: don't send a new frame if server hasn't responded
           if (awaitingResponse) return;
 
-          // Draw a smaller capture (canvas size set to 320x240)
-          ctx.drawImage(
-            videoRef.current,
-            0,
-            0,
-            canvasRef.current.width,
-            canvasRef.current.height
-          );
+          // Adaptive capture strategy:
+          // - Most frames: capture small 320x240 (low bandwidth, low latency)
+          // - Every keyframeInterval frames: capture large 640x480 (higher detail)
+          const keyframeInterval = 10; // send 1 high-res every 10 frames
+          const isKeyframe = frameCount % keyframeInterval === 0;
 
-          // Use toBlob to send binary (smaller than base64). Quality 0.5.
-          canvasRef.current.toBlob(
-            (blob) => {
-              if (!blob) return;
-              try {
-                // emit binary blob; server listens to 'image_binary'
-                socket.emit("image_binary", blob);
-                setAwaitingResponse(true);
-              } catch (err) {
-                console.warn("Binary emit failed, falling back to base64", err);
-                // fallback: send base64 (keep compatibility)
-                const frame = canvasRef.current!.toDataURL("image/jpeg", 0.35);
-                socket.emit("image", frame);
-                setAwaitingResponse(true);
-              }
-            },
-            "image/jpeg",
-            0.5
-          );
+          if (isKeyframe) {
+            // ensure main canvas is high-res for keyframes
+            if (canvasRef.current.width !== 640 || canvasRef.current.height !== 480) {
+              canvasRef.current.width = 640;
+              canvasRef.current.height = 480;
+            }
+            ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+            // send higher quality keyframe
+            canvasRef.current.toBlob(
+              (blob) => {
+                if (!blob) return;
+                try {
+                  socket.emit("image_binary", blob);
+                  setAwaitingResponse(true);
+                } catch (err) {
+                  console.warn("Binary emit failed on keyframe, fallback to base64", err);
+                  const frame = canvasRef.current!.toDataURL("image/jpeg", 0.75);
+                  socket.emit("image", frame);
+                  setAwaitingResponse(true);
+                }
+              },
+              "image/jpeg",
+              0.9
+            );
+          } else {
+            // draw to small offscreen canvas for frequent frames
+            const s = smallCanvasRef.current!;
+            const sctx = s.getContext("2d");
+            if (!sctx) return;
+            sctx.drawImage(videoRef.current, 0, 0, s.width, s.height);
+            s.toBlob(
+              (blob) => {
+                if (!blob) return;
+                try {
+                  socket.emit("image_binary", blob);
+                  setAwaitingResponse(true);
+                } catch (err) {
+                  console.warn("Binary emit small failed, fallback to base64", err);
+                  const frame = s.toDataURL("image/jpeg", 0.6);
+                  socket.emit("image", frame);
+                  setAwaitingResponse(true);
+                }
+              },
+              "image/jpeg",
+              0.7
+            );
+          }
 
           frameCount++;
           const now = Date.now();
@@ -430,60 +464,65 @@ const LiveDetectionComponent = () => {
                   </span>
                 </div>
               </div>
-              <div className="p-3 sm:p-4 relative">
-                <div className="rounded-xl overflow-hidden bg-slate-950 shadow-inner border border-slate-700/30">
-                  {frameSrc ? (
-                    <img
-                      src={frameSrc}
-                      alt="YOLO Output"
-                      width={640}
-                      height={480}
-                      className="w-full h-auto"
-                    />
-                  ) : (
-                    <div className="w-full aspect-video flex flex-col items-center justify-center bg-gray-950">
-                      <div className="w-16 h-16 border-4 border-slate-700 border-t-cyan-500 rounded-full animate-spin mb-4" />
-                      <span className="text-slate-500 text-sm font-medium">
-                        Waiting for video stream...
-                      </span>
+              <div className="p-3 sm:p-4">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  {/* Result Image - Bigger */}
+                  <div className="rounded-xl overflow-hidden bg-slate-950 shadow-inner border border-slate-700/30">
+                    {frameSrc ? (
+                      <img
+                        src={frameSrc}
+                        alt="YOLO Output"
+                        width={640}
+                        height={480}
+                        className="w-full h-auto"
+                      />
+                    ) : (
+                      <div className="w-full aspect-video flex flex-col items-center justify-center bg-gray-950">
+                        <div className="w-16 h-16 border-4 border-slate-700 border-t-cyan-500 rounded-full animate-spin mb-4" />
+                        <span className="text-slate-500 text-sm font-medium">
+                          Waiting for video stream...
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Detections panel - At the bottom */}
+                  {detections.length > 0 && (
+                    <div className="bg-slate-900/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden">
+                      <div className="px-3 sm:px-4 py-2 sm:py-3 bg-slate-800/50 border-b border-slate-700/50">
+                        <h3 className="font-semibold text-xs sm:text-sm flex items-center gap-2">
+                          <Activity className="w-3 h-3 sm:w-4 sm:h-4 text-cyan-400" />
+                          Detections ({detections.length} objects)
+                        </h3>
+                      </div>
+                      <div className="max-h-[200px] overflow-y-auto p-2 sm:p-3 custom-scrollbar">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                          {detections.map((det, idx) => (
+                            <div
+                              key={idx}
+                              className="flex flex-col gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 bg-slate-800/50 rounded-lg border border-slate-700/30 hover:border-cyan-500/30 transition-colors"
+                            >
+                              <span className="text-xs sm:text-sm font-medium text-slate-300">
+                                {det.class_name ?? `Class ${det.class_Id}`}
+                              </span>
+                              <div className="flex items-center gap-1.5 sm:gap-2">
+                                <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-300"
+                                    style={{ width: `${det.confidence * 100}%` }}
+                                  />
+                                </div>
+                                <span className="text-xs font-bold text-cyan-400 min-w-[2.5rem] text-right">
+                                  {(det.confidence * 100).toFixed(1)}%
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-
-                {/* Detections overlay */}
-                {detections.length > 0 && (
-                  <div className="absolute top-4 right-4 sm:top-8 sm:right-8 bg-slate-900/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-2xl border border-slate-700/50 max-h-[300px] sm:max-h-[400px] overflow-hidden max-w-[calc(100%-2rem)] sm:max-w-none">
-                    <div className="px-3 sm:px-4 py-2 sm:py-3 bg-slate-800/50 border-b border-slate-700/50">
-                      <h3 className="font-semibold text-xs sm:text-sm flex items-center gap-2">
-                        <Activity className="w-3 h-3 sm:w-4 sm:h-4 text-cyan-400" />
-                        Detections
-                      </h3>
-                    </div>
-                    <div className="max-h-[240px] sm:max-h-[340px] overflow-y-auto p-2 sm:p-3 space-y-1.5 sm:space-y-2 custom-scrollbar">
-                      {detections.map((det, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 bg-slate-800/50 rounded-lg border border-slate-700/30 hover:border-cyan-500/30 transition-colors"
-                        >
-                          <span className="text-xs sm:text-sm font-medium text-slate-300">
-                            {det.class_name ?? `Class ${det.class_Id}`}
-                          </span>
-                          <div className="flex items-center gap-1.5 sm:gap-2">
-                            <div className="w-12 sm:w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-300"
-                                style={{ width: `${det.confidence * 100}%` }}
-                              />
-                            </div>
-                            <span className="text-xs font-bold text-cyan-400 min-w-[2.5rem] sm:min-w-[3rem] text-right">
-                              {(det.confidence * 100).toFixed(1)}%
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>

@@ -48,7 +48,27 @@ class ModelLoader:
             }  
         """
 
-        results  = self.model.predict(source=img, imgsz=imagesz, conf=conf, verbose=False)
+        # Ensure color space is RGB for the YOLO model (OpenCV gives BGR)
+        if img is not None and img.dtype == "uint8":
+            try:
+                img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            except Exception:
+                # if conversion fails, fall back to original
+                img_rgb = img
+        else:
+            img_rgb = img
+
+        # Adjust imagesz to be a multiple of model stride (common 32 for YOLO)
+        try:
+            stride = int(getattr(self.model.model, 'stride', 32))
+        except Exception:
+            stride = 32
+        if imagesz % stride != 0:
+            imagesz_adj = ((imagesz + stride - 1) // stride) * stride
+        else:
+            imagesz_adj = imagesz
+
+        results = self.model.predict(source=img_rgb, imgsz=imagesz_adj, conf=conf, verbose=False)
         seggregated_result = results[0]
         boxes = getattr(seggregated_result, "boxes", None)
         detections = []
@@ -58,14 +78,20 @@ class ModelLoader:
                 "detections": [] 
             }
         
+        # Boxes are usually in format [x1, y1, x2, y2, conf, cls]
         for box in boxes.data.tolist():
-            x1, x2, y1, y2, conf_score, cls = box
+            # be defensive about ordering; try to unpack common formats
+            if len(box) >= 6:
+                x1, y1, x2, y2, conf_score, cls = box[:6]
+            else:
+                # fallback: pad or skip malformed
+                continue
             class_id = int(cls)
             detections.append({
                 "class_Id": class_id,
                 "class_name": self.class_names.get(class_id, str(class_id)),
                 "confidence": float(conf_score),
-                "bbox": [float(x1), float(x2), float(y1), float(y2)]
+                "bbox": [float(x1), float(y1), float(x2), float(y2)]
             })
 
         return {"detections": detections}
