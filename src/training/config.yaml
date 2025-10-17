@@ -1,6 +1,6 @@
-base_model: "yolo11n.pt"
+base_model: "best.pt"
 dataset_yaml: "../../dataset/data.yaml"
-epochs: 70
+epochs: 10
 batch_size: 16
 imagesz: 640
 project: "../../runs"

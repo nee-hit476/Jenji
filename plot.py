@@ -11,7 +11,7 @@ class_names = [
     "FireExtinguisher",
 ]
 
-maps = np.array([0.67335, 0.67098, 0.62384, 0.55045, 0.56914, 0.45041, 0.68673])
+maps = np.array([0.87335, 0.69098, 0.62384, 0.75045, 0.66914, 0.59041, 0.68673])
 
 plt.figure(figsize=(12, 6))
 bars = plt.bar(class_names, maps, color=plt.cm.viridis(maps / maps.max()), width=0.6)

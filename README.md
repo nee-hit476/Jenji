@@ -39,7 +39,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/dat.png" alt="Data Analysis"/>
+  <img src="assets/plots.png" alt="Data Analysis"/>
 </p>
 
 
