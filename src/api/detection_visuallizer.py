@@ -69,8 +69,9 @@ class DetectionVisualizer:
                 if x2 <= x1 or y2 <= y1:
                     continue
                 
-                # Create label
-                label: str = f"ID:{class_id} ({conf:.2f})"
+                # Prefer class_name when available for more informative labels
+                class_name = det.get("class_name") or f"ID:{class_id}"
+                label: str = f"{class_name} ({conf:.2f})"
                 
                 # Draw bounding box
                 cv2.rectangle(

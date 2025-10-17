@@ -20,8 +20,9 @@ class Config:
     MAX_HTTP_BUFFER_SIZE: int = 100_000_000 # 100mb
 
     # Model Settings
+    # In containerized deployments we expect the model to be mounted at /app/model/best.pt
     MODEL_PATH: str = os.getenv(
-        "MODEL_PATH", 
+        "MODEL_PATH",
         r"C:\Users\itz_n\OneDrive\Desktop\Microsoft-Hackathon\Jenji\runs\yolov11_experiment_01\weights\best.pt"
     )
 

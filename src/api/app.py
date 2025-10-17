@@ -5,7 +5,12 @@ import numpy as np
 from PIL import Image
 from flask import Flask
 from flask_socketio import SocketIO
+from config import Config
 from model_loader import ModelLoader
+import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 # -------------------------------
 # Flask and SocketIO Initialization
@@ -18,11 +23,17 @@ socketio: SocketIO = SocketIO(
     max_http_buffer_size=100_000_000  # 100MB max buffer
 )
 
-# -------------------------------
-# Load YOLO model
-# -------------------------------
-model_path: str = r"C:\Users\itz_n\OneDrive\Desktop\Microsoft-Hackathon\Jenji\runs\yolov11_experiment_01\weights\best.pt"
-model: ModelLoader = ModelLoader(model_path)
+cfg = Config()
+# Try to load model, but don't crash the server if the model file is not yet present.
+model: ModelLoader | None = None
+try:
+    if not os.path.exists(cfg.MODEL_PATH):
+        logger.warning(f"Model not found at {cfg.MODEL_PATH}. Server will start and wait for model to be provided.")
+    else:
+        model = ModelLoader(cfg.MODEL_PATH)
+        logger.info("Model loaded successfully")
+except Exception as e:
+    logger.exception(f"Failed to load model: {e}")
 
 
 @app.route("/")

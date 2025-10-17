@@ -8,6 +8,7 @@ import { io, type Socket } from "socket.io-client";
 
 interface Detection {
   class_Id: number;
+  class_name?: string;
   confidence: number;
   bbox?: number[];
 }
@@ -201,8 +202,8 @@ const ImageDetectionComponent = () => {
                             key={idx}
                             className="flex items-center justify-between px-3 py-2 bg-gray-800/50 rounded-lg border border-gray-700/30"
                           >
-                            <span className="text-sm font-medium text-gray-300">
-                              Class {det.class_Id}
+                              <span className="text-sm font-medium text-gray-300">
+                              {det.class_name ?? `Class ${det.class_Id}`}
                             </span>
                             <div className="flex items-center gap-2">
                               <div className="w-16 h-1.5 bg-gray-700 rounded-full overflow-hidden">

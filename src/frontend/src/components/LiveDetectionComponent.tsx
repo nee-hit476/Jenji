@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 
 interface Detection {
   class_Id: number;
+  class_name?: string;
   confidence: number;
 }
 
@@ -21,6 +22,9 @@ const LiveDetectionComponent = () => {
   const [fps, setFps] = useState(0);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [awaitingResponse, setAwaitingResponse] = useState(false);
+  const [devices, setDevices] = useState<Array<{ deviceId: string; label: string }>>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -64,18 +68,36 @@ const LiveDetectionComponent = () => {
   }, []);
 
   // Initialize webcam
+              <button
+                onClick={() => window.open(window.location.href, "_blank")}
+                title="Open frontend in external browser (recommended for camera support)"
+                className="text-xs text-slate-300 px-2 py-0.5 rounded bg-gray-900/20 border border-slate-700/30"
+              >
+                Open in Browser
+              </button>
   useEffect(() => {
     let mounted = true;
 
-    const initCamera = async () => {
+    const stopStream = () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      }
+      if (videoRef.current) videoRef.current.srcObject = null;
+    };
+
+    const startCamera = async (deviceId?: string | null) => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { 
-            width: { ideal: 640 },
-            height: { ideal: 480 }
-          } 
-        });
-        
+        const constraints: MediaStreamConstraints = {
+          video: deviceId
+            ? { deviceId: { exact: deviceId }, width: { ideal: 640 }, height: { ideal: 480 } }
+            : { width: { ideal: 640 }, height: { ideal: 480 } },
+        };
+
+        // Stop previous stream if any
+        stopStream();
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints as any);
         if (mounted && videoRef.current) {
           videoRef.current.srcObject = stream;
           streamRef.current = stream;
@@ -83,23 +105,76 @@ const LiveDetectionComponent = () => {
         }
       } catch (error) {
         console.error("Camera access error:", error);
-        if (mounted) {
-          setCameraError("Unable to access camera. Please grant camera permissions.");
+        if (mounted) setCameraError("Unable to access camera. Please grant camera permissions or try opening the app in an external browser.");
+      }
+    };
+    const ensurePermissionAndDevices = async () => {
+      try {
+        // First request a quick permission (may prompt user). We stop this stream immediately.
+        const tempStream = await navigator.mediaDevices.getUserMedia({ video: true } as any);
+        tempStream.getTracks().forEach((t) => t.stop());
+
+        // Now enumeration should include device labels
+        const list = await navigator.mediaDevices.enumerateDevices();
+        const cams = list
+          .filter((d) => d.kind === "videoinput")
+          .map((d) => ({ deviceId: d.deviceId, label: d.label || `Camera ${d.deviceId}` }));
+        setDevices(cams);
+        // If nothing selected, pick first available
+        const pick = selectedDeviceId || (cams.length > 0 ? cams[0].deviceId : null);
+        setSelectedDeviceId(pick);
+
+        // Start camera using picked device (or default)
+        await startCamera(pick);
+      } catch (err) {
+        console.warn("Permission/enumeration flow failed:", err);
+        // fallback: try to start default camera without deviceId
+        try {
+          await startCamera(null);
+          setCameraError("Using default camera; device selection may not be supported in this environment (webview). Try external browser for multiple camera selection.");
+        } catch (err2) {
+          console.error("Fallback camera start failed:", err2);
+          setCameraError("Unable to access any camera. Check permissions or try opening in an external browser.");
         }
       }
     };
 
-    initCamera();
+    // Run permission+enumeration-start flow
+    ensurePermissionAndDevices();
 
     return () => {
       mounted = false;
-      // Cleanup camera stream
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
       }
     };
   }, []);
+
+  // restart camera when selected device changes
+  useEffect(() => {
+    // don't run on first render if selectedDeviceId is null
+    if (!selectedDeviceId) return;
+    const restart = async () => {
+      try {
+        // stop and restart with new device
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((t) => t.stop());
+          streamRef.current = null;
+        }
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: selectedDeviceId }, width: { ideal: 640 }, height: { ideal: 480 } } } as any);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          streamRef.current = stream;
+          setCameraError(null);
+        }
+      } catch (err) {
+        console.error("Failed to switch camera:", err);
+        setCameraError("Failed to switch camera. Check permissions.");
+      }
+    };
+    restart();
+  }, [selectedDeviceId]);
 
   // Send frames to server
   useEffect(() => {
@@ -117,31 +192,51 @@ const LiveDetectionComponent = () => {
       const ctx = canvasRef.current.getContext("2d");
       if (!ctx) return;
 
-      try {
-        ctx.drawImage(
-          videoRef.current,
-          0,
-          0,
-          canvasRef.current.width,
-          canvasRef.current.height
-        );
-        const frame = canvasRef.current.toDataURL("image/jpeg", 0.5);
-        socket.emit("image", frame);
+        try {
+          // Simple backpressure: don't send a new frame if server hasn't responded
+          if (awaitingResponse) return;
 
-        frameCount++;
-        const now = Date.now();
-        if (now - lastTime >= 1000) {
-          setFps(frameCount);
-          frameCount = 0;
-          lastTime = now;
+          ctx.drawImage(
+            videoRef.current,
+            0,
+            0,
+            canvasRef.current.width,
+            canvasRef.current.height
+          );
+
+          // Reduce size / quality to lower bandwidth and inference time
+          const frame = canvasRef.current.toDataURL("image/jpeg", 0.35);
+          socket.emit("image", frame);
+          setAwaitingResponse(true);
+
+          frameCount++;
+          const now = Date.now();
+          if (now - lastTime >= 1000) {
+            setFps(frameCount);
+            frameCount = 0;
+            lastTime = now;
+          }
+        } catch (error) {
+          console.error("Error processing frame:", error);
         }
-      } catch (error) {
-        console.error("Error processing frame:", error);
-      }
     }, 150);
 
     return () => clearInterval(interval);
   }, [socket, isConnected]);
+
+  // release backpressure when server responds
+  useEffect(() => {
+    if (!socket) return;
+    const handler = (data: { frame: string; detections: any[] }) => {
+      setFrameSrc(data.frame);
+      setDetections(data.detections || []);
+      setAwaitingResponse(false);
+    };
+    socket.on("response_back", handler);
+    return () => {
+      socket.off("response_back", handler);
+    };
+  }, [socket]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -240,6 +335,41 @@ const LiveDetectionComponent = () => {
                     <Video className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
                   </div>
                   <h2 className="text-base sm:text-lg font-semibold">Webcam Feed</h2>
+                  {/* Camera selector */}
+                  <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gray-950/30 border border-slate-600/30">
+                    <select
+                      value={selectedDeviceId ?? ""}
+                      onChange={(e) => setSelectedDeviceId(e.target.value)}
+                      className="bg-transparent text-xs sm:text-sm outline-none"
+                    >
+                      {devices.length === 0 ? (
+                        <option value="">No cameras</option>
+                      ) : (
+                        devices.map((d) => (
+                          <option key={d.deviceId} value={d.deviceId}>
+                            {d.label}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const list = await navigator.mediaDevices.enumerateDevices();
+                          const cams = list
+                            .filter((d) => d.kind === "videoinput")
+                            .map((d) => ({ deviceId: d.deviceId, label: d.label || `Camera ${d.deviceId}` }));
+                          setDevices(cams);
+                          if (!selectedDeviceId && cams.length > 0) setSelectedDeviceId(cams[0].deviceId);
+                        } catch (err) {
+                          console.warn("enumerateDevices failed:", err);
+                        }
+                      }}
+                      className="text-xs text-slate-300 px-2 py-0.5 rounded bg-gray-900/20 border border-slate-700/30"
+                    >
+                      Refresh
+                    </button>
+                  </div>
                 </div>
                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
               </div>
@@ -320,7 +450,7 @@ const LiveDetectionComponent = () => {
                           className="flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 bg-slate-800/50 rounded-lg border border-slate-700/30 hover:border-cyan-500/30 transition-colors"
                         >
                           <span className="text-xs sm:text-sm font-medium text-slate-300">
-                            Class {det.class_Id}
+                            {det.class_name ?? `Class ${det.class_Id}`}
                           </span>
                           <div className="flex items-center gap-1.5 sm:gap-2">
                             <div className="w-12 sm:w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden">

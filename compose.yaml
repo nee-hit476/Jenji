@@ -12,7 +12,14 @@ services:
     build:
       context: .
     ports:
-      - 8000:8000
+      - 8080:8080
+    # Example: mount your trained model into the container so the server can load it
+    # volumes:
+    #   - ./runs/yolov11_experiment_01/weights/best.pt:/app/model/best.pt:ro
+    # Alternatively, mount a directory and set MODEL_PATH to point to it:
+    #   - ./model:/app/model
+    # environment:
+    #   - MODEL_PATH=/app/model/best.pt
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
