@@ -10,7 +10,7 @@ class Config:
 
     # Server Settings
     HOST: str = "0.0.0.0"
-    PORT: int = 8080
+    PORT: int = int(os.environ.get("PORT", 8080))
 
     # cors settings
     CORS_ALLOWED_ORIGINS: str = "*"

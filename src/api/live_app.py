@@ -120,5 +120,10 @@ def main():
         allow_unsafe_werkzeug=True  # For development
     )
 
+    # For Gunicorn / Render import
+    _config = Config()
+    app, socketio = create_app(_config)
+
+
 if __name__ == "__main__":
     main()
