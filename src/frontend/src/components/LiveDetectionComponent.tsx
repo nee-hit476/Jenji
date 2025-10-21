@@ -22,9 +22,11 @@ const LiveDetectionComponent = () => {
   const [detections, setDetections] = useState<Detection[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [fps, setFps] = useState(0);
+  // target capture fps (controls how frequently we send frames)
+  const [targetFps, setTargetFps] = useState<number>(5);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  const [awaitingResponse, setAwaitingResponse] = useState(false);
+  // no client-side awaitingResponse gating anymore; server processes latest frame
   const [devices, setDevices] = useState<Array<{ deviceId: string; label: string }>>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
 
@@ -192,7 +194,8 @@ const LiveDetectionComponent = () => {
       smallCanvasRef.current.height = 240;
     }
 
-    const interval = setInterval(() => {
+  const intervalMs = Math.max(50, Math.round(1000 / (targetFps || 1))); // clamp minimal interval
+  const interval = setInterval(() => {
       if (!videoRef.current || !canvasRef.current || !streamRef.current) return;
       
       // Check if video is ready
@@ -202,8 +205,7 @@ const LiveDetectionComponent = () => {
       if (!ctx) return;
 
         try {
-          // Simple backpressure: don't send a new frame if server hasn't responded
-          if (awaitingResponse) return;
+          // No client-side backpressure here — server keeps only the latest frame per client.
 
           // Adaptive capture strategy:
           // - Most frames: capture small 320x240 (low bandwidth, low latency)
@@ -224,12 +226,10 @@ const LiveDetectionComponent = () => {
                 if (!blob) return;
                 try {
                   socket.emit("image_binary", blob);
-                  setAwaitingResponse(true);
                 } catch (err) {
                   console.warn("Binary emit failed on keyframe, fallback to base64", err);
                   const frame = canvasRef.current!.toDataURL("image/jpeg", 0.75);
                   socket.emit("image", frame);
-                  setAwaitingResponse(true);
                 }
               },
               "image/jpeg",
@@ -246,12 +246,10 @@ const LiveDetectionComponent = () => {
                 if (!blob) return;
                 try {
                   socket.emit("image_binary", blob);
-                  setAwaitingResponse(true);
                 } catch (err) {
                   console.warn("Binary emit small failed, fallback to base64", err);
                   const frame = s.toDataURL("image/jpeg", 0.6);
                   socket.emit("image", frame);
-                  setAwaitingResponse(true);
                 }
               },
               "image/jpeg",
@@ -269,7 +267,7 @@ const LiveDetectionComponent = () => {
         } catch (error) {
           console.error("Error processing frame:", error);
         }
-    }, 150);
+  }, intervalMs);
 
     return () => clearInterval(interval);
   }, [socket, isConnected]);
@@ -280,7 +278,6 @@ const LiveDetectionComponent = () => {
     const handler = (data: { frame: string; detections: any[] }) => {
       setFrameSrc(data.frame);
       setDetections(data.detections || []);
-      setAwaitingResponse(false);
     };
     socket.on("response_back", handler);
     return () => {
@@ -350,7 +347,19 @@ const LiveDetectionComponent = () => {
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gray-950/50 border border-slate-600/50">
                 <Activity className="w-3 h-3 sm:w-4 sm:h-4 text-cyan-400" />
-                <span className="text-xs sm:text-sm font-medium">{fps} FPS</span>
+                <span className="text-xs sm:text-sm font-medium">Display: {fps} FPS</span>
+                <div className="ml-3 flex items-center gap-2">
+                  <label className="text-xs text-slate-400">Target FPS</label>
+                  <input
+                    type="range"
+                    min={1}
+                    max={30}
+                    value={targetFps}
+                    onChange={(e) => setTargetFps(Number(e.target.value))}
+                    className="w-24"
+                  />
+                  <span className="text-xs text-slate-300">{targetFps}</span>
+                </div>
               </div>
               <div
                 className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border ${

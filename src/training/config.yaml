@@ -4,6 +4,6 @@ epochs: 10
 batch_size: 16
 imagesz: 640
 project: "../../runs"
-run_name: "yolov11_experiment_01"
+run_name: "yolov11_experiment_013"
 device: cpu
 workers: 4

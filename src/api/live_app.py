@@ -57,7 +57,8 @@ def create_app(config: Config) -> tuple[Flask, SocketIO]:
     model_thread.start()
 
     # Create handlers (will use global detection_service)
-    handlers = SocketIOHandlers(lambda: detection_service, service_ready)
+    # Pass socketio so handlers can start background tasks and emit to sessions
+    handlers = SocketIOHandlers(lambda: detection_service, service_ready, socketio)
 
     @app.route("/")
     def home() -> str:

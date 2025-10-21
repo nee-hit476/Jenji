@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class SocketIOHandlers:
     """Handles SocketIO events for real-time detection."""
     
-    def __init__(self, detection_service_getter: Callable, service_ready: threading.Event):
+    def __init__(self, detection_service_getter: Callable, service_ready: threading.Event, socketio):
         """
         Initialize handlers with detection service getter.
         
@@ -18,7 +18,12 @@ class SocketIOHandlers:
         """
         self.get_detection_service = detection_service_getter
         self.service_ready = service_ready
+        self.socketio = socketio
+        # client tracking and live-buffer structures
         self.active_clients: Dict[str, dict] = {}
+        self.latest_frame = {}
+        self.processing = {}
+        self.client_lock = {}
     
     def handle_image(self, data: str) -> None:
         """
@@ -71,11 +76,43 @@ class SocketIOHandlers:
                 emit("response_back", {"error": "Detection service not available", "loading": True})
                 return
 
-            # Process raw bytes
-            result = detection_service.process_frame_bytes(data)
+            # Fast live path: store the latest binary frame per client and process in a background worker
+            from flask import request
+            sid = request.sid
 
-            emit("response_back", result)
-            logger.info(f"Processed binary frame with {result['count']} detections")
+            # ensure lock exists
+            if sid not in self.client_lock:
+                self.client_lock[sid] = threading.Lock()
+
+            with self.client_lock[sid]:
+                # store/overwrite latest frame
+                self.latest_frame[sid] = data
+                if not self.processing.get(sid, False):
+                    self.processing[sid] = True
+
+                    def live_worker(sid):
+                        detection_service = self.get_detection_service()
+                        target_size = 320
+                        while True:
+                            frame = None
+                            with self.client_lock[sid]:
+                                frame = self.latest_frame.pop(sid, None)
+                                if frame is None:
+                                    self.processing[sid] = False
+                                    break
+                            try:
+                                res = detection_service.process_frame_bytes_live(frame, target_size=target_size)
+                                # emit back to originating session
+                                self.socketio.emit("response_back", res, to=sid)
+                                logger.info(f"Live processed frame for {sid} with {res.get('count',0)} detections")
+                            except Exception as e:
+                                logger.error(f"Error in live worker for {sid}: {e}")
+                                self.socketio.emit("response_back", {"error": str(e)}, to=sid)
+
+                    try:
+                        self.socketio.start_background_task(live_worker, sid)
+                    except Exception as e:
+                        logger.error(f"Failed to start live worker: {e}")
 
         except Exception as e:
             logger.error(f"Error processing binary frame: {str(e)}")
