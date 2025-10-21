@@ -39,6 +39,17 @@
 
 ## <img src="assets/jenji.png" width="30" align="center"/> Jenji AI Scores
 
+
+<p align="center">
+  <img src="assets/BoxP_curve.png" alt="Training Scores"/>
+</p>
+
+
+<p align="center">
+  <img src="assets/confusion_matrix.png" alt="Training Scores"/>
+</p>
+
+
 <p align="center">
   <img src="assets/trained_scores.png" alt="Training Scores"/>
 </p>
