@@ -31,13 +31,7 @@
   <img src="assets/detection.png" alt="Detection View"/>
 </p>
 
-## <img src="assets/jenji.png" width="30" align="center"/> Jenji AI Demo
-
-<video controls>
-  <source src="assets/jenji_aI_demo.mp4" type="video/mp4">
-</video>
-
-## <img src="assets/jenji.png" width="30" align="center"/> Jenji AI Scores
+## <img src="assets/jenji.png" width="30" align="center"/> Jenji AI Scores  
 
 <p align="center">
   <img src="assets/BoxP_curve.png" alt="Training Scores"/>
